@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dinamika Masalalari</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f4f0;
+  --surface:#ffffff;
+  --surface2:#eeedea;
+  --accent:#1a6b3a;
+  --accent-light:#e3f2ea;
+  --accent2:#b34a00;
+  --text:#181818;
+  --muted:#636363;
+  --border:#dddbd5;
+  --radius:10px;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Inter',sans-serif;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+
+header{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:1.4rem 0;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 1px 6px rgba(0,0,0,.05);
+}
+.hdr{max-width:1120px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+.hdr-title{flex:1;min-width:180px}
+.hdr-title h1{font-size:1.25rem;font-weight:600;letter-spacing:-.02em}
+.hdr-title p{font-size:.78rem;color:var(--muted);margin-top:2px}
+.search-wrap{position:relative}
+.search-wrap input{
+  font-family:var(--sans);font-size:.875rem;
+  padding:.52rem 1rem .52rem 2.3rem;
+  border:1px solid var(--border);border-radius:8px;
+  background:var(--bg);color:var(--text);width:260px;outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.search-wrap input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,107,58,.13)}
+.sico{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+
+.filter-row{max-width:1120px;margin:1.2rem auto 0;padding:0 1.5rem;display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:.75rem;font-weight:500;padding:4px 13px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .14s;white-space:nowrap}
+.pill:hover,.pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.formula-bar{max-width:1120px;margin:1.2rem auto 0;padding:0 1.5rem}
+.formula-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1.25rem}
+.fl{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+.fl-label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);white-space:nowrap}
+.f{font-size:.78rem;font-family:var(--mono);padding:3px 10px;border-radius:5px;background:var(--accent-light);color:var(--accent);white-space:nowrap}
+
+.main{max-width:1120px;margin:0 auto;padding:1.2rem 1.5rem 3rem}
+.count{font-size:.78rem;color:var(--muted);margin-bottom:.9rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:13px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow .15s,transform .15s}
+.card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}
+.card-top{padding:.95rem 1.1rem .75rem}
+.card-meta{display:flex;align-items:center;gap:8px;margin-bottom:.55rem}
+.nbadge{width:26px;height:26px;border-radius:6px;background:var(--accent-light);color:var(--accent);font-size:.7rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono)}
+.tbadge{font-size:.68rem;font-weight:500;padding:2px 8px;border-radius:4px;background:#fef3e8;color:var(--accent2)}
+.card-q{font-size:.84rem;font-weight:500;color:var(--text);line-height:1.5}
+
+.given-block{background:var(--surface2);border-top:1px solid var(--border);padding:.6rem 1.1rem;font-size:.76rem;font-family:var(--mono);color:var(--muted);line-height:1.65}
+.gl{font-family:var(--sans);font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+
+.ans-block{padding:.7rem 1.1rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.al{font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);flex-shrink:0}
+.av{font-size:.875rem;font-weight:600;color:var(--accent);font-family:var(--mono);text-align:right}
+
+.stoggle{width:100%;text-align:left;padding:.55rem 1.1rem;border:none;background:none;border-top:1px solid var(--border);font-size:.76rem;color:var(--accent);cursor:pointer;font-family:var(--sans);font-weight:500;display:flex;align-items:center;gap:6px;transition:background .12s}
+.stoggle:hover{background:var(--accent-light)}
+.arrow{transition:transform .2s;display:inline-block}
+.arrow.open{transform:rotate(90deg)}
+
+.sbody{display:none;padding:.7rem 1.1rem;border-top:1px solid var(--border);background:var(--surface2)}
+.sbody.open{display:block}
+.step{display:flex;gap:8px;font-size:.78rem;line-height:1.65;padding:3px 0;border-bottom:1px dashed var(--border)}
+.step:last-child{border-bottom:none}
+.sn{font-family:var(--mono);font-size:.67rem;font-weight:600;color:var(--muted);flex-shrink:0;margin-top:2px;min-width:18px}
+.st{font-family:var(--mono);color:var(--text)}
+
+.nores{grid-column:1/-1;text-align:center;padding:4rem 1rem;color:var(--muted);font-size:.9rem}
+footer{text-align:center;padding:1.5rem;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:1rem}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.search-wrap input{width:100%}.hdr{gap:.9rem}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="hdr">
+  <div class="hdr-title">
+    <h1>Dinamika Masalalari</h1>
+    <p>Newton qonunlari · Kuch · Energiya · Harakat miqdori</p>
+  </div>
+  <div class="search-wrap">
+    <svg class="sico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="Masala yoki mavzu qidiring…" oninput="applyFilters()">
+  </div>
+</div>
+</header>
+
+<div class="filter-row" id="filterRow"></div>
+
+<div class="formula-bar">
+  <div style="height:1rem"></div>
+  <div class="formula-box">
+    <div class="fl-label" style="margin-bottom:7px">Asosiy formulalar</div>
+    <div class="fl">
+      <span class="f">F = m·a</span>
+      <span class="f">a = d²x/dt²</span>
+      <span class="f">p = m·v</span>
+      <span class="f">E_k = ½mv²</span>
+      <span class="f">E_k(disk) = ½mv²+½Jω²</span>
+      <span class="f">T = m(g±a)</span>
+      <span class="f">W = F·s·cosα</span>
+      <span class="f">F_n = m·ω²·R</span>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+<div class="count" id="countBar"></div>
+<div class="grid" id="grid"></div>
+</main>
+
+<footer>Mexanika · Dinamika · 35 ta masala</footer>
+
+<script>
+const data = [
+  {n:1, tag:"Kuch (F=ma)", q:"Nuqta massasi 4 kg, tezligi 2 m/s = o'zgarmas. Kuch qiymati?", given:"m=4 kg;  v=2 m/s = const", steps:["Tezlik o'zgarmas → a = 0","F = m·a = 4×0 = 0"], ans:"F = 0 N"},
+  {n:2, tag:"Kuch (F=ma)", q:"m=5 kg detal x=2t²+4t+6, t=4s dagi kuch", given:"m=5 kg;  x=2t²+4t+6 m;  t=4s", steps:["v = dx/dt = 4t+4","a = dv/dt = 4 m/s²","F = m·a = 5×4"], ans:"F = 20 N"},
+  {n:3, tag:"Kuch (F=ma)", q:"Harakat tenglamasi y=8t²+2, m=2 kg — kuch", given:"m=2 kg;  y=8t²+2 m", steps:["v = dy/dt = 16t","a = d²y/dt² = 16 m/s²","F = m·a = 2×16"], ans:"F = 32 N"},
+  {n:4, tag:"Qiyalik harakati", q:"m-massali jism 30° silliq qiyalikda v₀=30 m/s yuqoriga. To'xtash vaqti?", given:"α=30°;  v₀=30 m/s;  μ=0 (silliq)", steps:["Sekinlanish: a = g·sinα = 9.8×0.5 = 4.9 m/s²","v = v₀ − a·t = 0 → t = v₀/a = 30/4.9"], ans:"t ≈ 6.12 s"},
+  {n:5, tag:"Aylana harakat kuchi", q:"m=1 kg, x=10cos(πt), y=10sin(πt), t=4s dagi kuch", given:"m=1 kg;  x=10cosπt; y=10sinπt;  t=4s", steps:["R=10m;  ω=π rad/s","aₓ=−10π²cosπt;  aᵧ=−10π²sinπt","a = √(aₓ²+aᵧ²) = 10π²","F = m·a = 1×10π²"], ans:"F = 10π² ≈ 98.7 N"},
+  {n:6, tag:"Qiyalik harakati", q:"m-massali jism 30° silliq qiyalikda v₀=20 m/s yuqoriga. Masofa?", given:"α=30°;  v₀=20 m/s;  μ=0", steps:["a = g·sinα = 4.9 m/s²","t = v₀/a = 20/4.9 ≈ 4.08 s","s = v₀t − ½at² = 20²/(2×4.9)"], ans:"s ≈ 40.8 m"},
+  {n:7, tag:"To'xtash vaqti", q:"6 t avtomobil v=70 km/s, F_q=0.4mg. To'xtash vaqti?", given:"m=6000 kg;  v=70 km/s=19.44 m/s;  F=0.4mg", steps:["a = F/m = 0.4g = 3.92 m/s²","t = v/a = 19.44/3.92"], ans:"t ≈ 4.96 s"},
+  {n:8, tag:"To'xtash yo'li", q:"12 t avtomobil v=60 km/s, F_q=0.5mg. To'xtash yo'li?", given:"m=12000 kg;  v=60 km/s=16.67 m/s;  F=0.5mg", steps:["a = 0.5g = 4.9 m/s²","s = v²/(2a) = 16.67²/(2×4.9)"], ans:"s ≈ 28.4 m"},
+  {n:9, tag:"Tekislikda harakat kuchi", q:"m=1 kg, x=sin2t, y=5cos2t, t=π/2 s dagi kuch", given:"m=1 kg;  x=sin2t;  y=5cos2t;  t=π/2 s", steps:["aₓ = −4sin2t;  aᵧ = −20cos2t","t=π/2: aₓ=0;  aᵧ=−20cos π=20","F = m·√(aₓ²+aᵧ²) = 1×20"], ans:"F = 20 N"},
+  {n:10, tag:"Massa aniqlash", q:"F=9τ+8n, urinma tezlanish a_τ=0.5 m/s². Massa?", given:"F_τ=9 N (urinma);  a_τ=0.5 m/s²", steps:["F_τ = m·a_τ","m = F_τ/a_τ = 9/0.5"], ans:"m = 18 kg"},
+  {n:11, tag:"Kuch maksimumi", q:"m=2 kg, x=5sin2t — kuchning eng katta qiymati", given:"m=2 kg;  x=5sin2t m", steps:["v = 10cos2t","a = −20sin2t;  |a|_max = 20 m/s²","F_max = m×|a|_max = 2×20"], ans:"F_max = 40 N"},
+  {n:12, tag:"Impuls vaqti", q:"m=100 kg, F=10t. Tezlik 15→25 m/s bo'lishi uchun vaqt?", given:"m=100 kg;  F=10t;  v₁=15;  v₂=25 m/s", steps:["Newton: 10t = 100·dv/dt","∫10t dt = 100(v₂−v₁)","5t² = 100×10 = 1000","t² = 200  →  t = √200"], ans:"t ≈ 14.1 s"},
+  {n:13, tag:"Kuch (F=ma)", q:"x=3t²+2t, m=4 kg — kuch miqdori", given:"m=4 kg;  x=3t²+2t m", steps:["a = d²x/dt² = 6 m/s²","F = m·a = 4×6"], ans:"F = 24 N"},
+  {n:14, tag:"Tekislikda harakat kuchi", q:"m=1 kg, x=sin2t, y=5cos2t, t=π/2 s — kuch moduli", given:"m=1 kg;  x=sin2t;  y=5cos2t;  t=π/2 s", steps:["aₓ=−4sin2t;  aᵧ=−20cos2t","t=π/2: aₓ=0;  aᵧ=20","F=m·|a|=1×20"], ans:"F = 20 N"},
+  {n:15, tag:"Massa aniqlash", q:"F=3τ+4n, urinma tezlanish a_τ=5 m/s². Massa?", given:"F_τ=3 N;  a_τ=5 m/s²", steps:["m = F_τ/a_τ = 3/5"], ans:"m = 0.6 kg"},
+  {n:16, tag:"Kuch maksimumi", q:"m=2 kg, x=5sin2t — kuchning eng katta qiymati (2-masala)", given:"m=2 kg;  x=5sin2t m", steps:["a_max = ω²·A = 4×5 = 20 m/s²","F_max = 2×20"], ans:"F_max = 40 N"},
+  {n:17, tag:"Impuls vaqti", q:"m=100 kg, F=10t. Tezlik 5→15 m/s bo'lishi uchun vaqt?", given:"m=100 kg;  F=10t;  v₁=5;  v₂=15 m/s", steps:["5t² = 100×(15−5) = 1000","t² = 200  →  t = √200"], ans:"t ≈ 14.1 s"},
+  {n:18, tag:"Massa aniqlash", q:"F=50 N, a=5 m/s². Jism massasi?", given:"F=50 N;  a=5 m/s²", steps:["F = m·a","m = F/a = 50/5"], ans:"m = 10 kg"},
+  {n:19, tag:"Kuch (F=ma)", q:"x=3t²+2t, m=4 kg — kuch miqdori (takror)", given:"m=4 kg;  x=3t²+2t m", steps:["a = 6 m/s²","F = 4×6"], ans:"F = 24 N"},
+  {n:20, tag:"Harakat miqdori", q:"m=3 kg, v=6 m/s — harakat miqdori", given:"m=3 kg;  v=6 m/s", steps:["p = m·v = 3×6"], ans:"p = 18 kg·m/s"},
+  {n:21, tag:"Vertikal ot. vaqt", q:"v₀=10 m/s yuqoriga otilgan jism eng yuqori nuqtaga vaqti", given:"v₀=10 m/s;  g=9.8 m/s²", steps:["v = v₀ − g·t = 0","t = v₀/g = 10/9.8"], ans:"t ≈ 1.02 s"},
+  {n:22, tag:"Vertikal ot. balandlik", q:"v₀=10 m/s yuqoriga otilgan jism maksimal balandligi", given:"v₀=10 m/s;  g=9.8 m/s²", steps:["H = v₀²/(2g) = 100/19.6"], ans:"H ≈ 5.1 m"},
+  {n:23, tag:"Ip tarangligi", q:"G=400 N yuk a=2.5 m/s² yuqoriga ko'tarilmoqda. Ip tarangligi?", given:"G=400 N;  m=G/g≈40.8 kg;  a=2.5 m/s² (yuqori)", steps:["T − G = m·a","T = G + m·a = 400 + 40.8×2.5"], ans:"T ≈ 502 N"},
+  {n:24, tag:"Ip tarangligi", q:"G=400 N yuk a=2.5 m/s² pastga tushmoqda. Ip tarangligi?", given:"G=400 N;  m≈40.8 kg;  a=2.5 m/s² (past)", steps:["G − T = m·a","T = G − m·a = 400 − 40.8×2.5"], ans:"T ≈ 298 N"},
+  {n:25, tag:"Ip tarangligi", q:"m=20 kg yuk a=2 m/s² yuqoriga ko'tarilmoqda. Ip tarangligi?", given:"m=20 kg;  a=2 m/s² (yuqori)", steps:["T − mg = m·a","T = m(g+a) = 20×(9.8+2)"], ans:"T = 236 N"},
+  {n:26, tag:"Ip tarangligi", q:"m=20 kg yuk a=2.5 m/s² pastga tushmoqda. Ip tarangligi?", given:"m=20 kg;  a=2.5 m/s² (past)", steps:["mg − T = m·a","T = m(g−a) = 20×(9.8−2.5)"], ans:"T = 146 N"},
+  {n:27, tag:"Kuch (F=ma)", q:"m=2 kg, v=3.5 m/s = o'zgarmas. Kuch?", given:"m=2 kg;  v=3.5 m/s = const", steps:["a = 0  →  F = 0"], ans:"F = 0 N"},
+  {n:28, tag:"Harakat miqdori", q:"m=5 kg, x=2t²+4t+6, t=4s — harakat miqdori", given:"m=5 kg;  x=2t²+4t+6 m;  t=4s", steps:["v = 4t+4;  v(4)=20 m/s","p = m·v = 5×20"], ans:"p = 100 kg·m/s"},
+  {n:29, tag:"Kinetik energiya", q:"m=4 kg, v=2 m/s — kinetik energiya", given:"m=4 kg;  v=2 m/s", steps:["E_k = ½mv² = ½×4×4"], ans:"E_k = 8 J"},
+  {n:30, tag:"Disk kinetik energiyasi", q:"m=2 kg, R=1 m disk, J=2 kg·m², v_c=2 m/s — kinetik energiya", given:"m=2 kg;  R=1m;  J=2 kg·m²;  v_c=2 m/s", steps:["ω = v_c/R = 2 rad/s","E = ½mv² + ½Jω²","E = ½×2×4 + ½×2×4 = 4+4"], ans:"E_k = 8 J"},
+  {n:31, tag:"Og'irlik ishi", q:"m=25 kg, α=30°, s=20 m pastga — og'irlik kuchi ishi", given:"m=25 kg;  α=30°;  s=20 m", steps:["W = m·g·s·sinα = 25×9.8×20×0.5"], ans:"W = 2450 J"},
+  {n:32, tag:"Kinetik energiya", q:"m=2 kg, x=2t²+4t+6, t=2s — kinetik energiya", given:"m=2 kg;  x=2t²+4t+6;  t=2s", steps:["v = 4t+4;  v(2)=12 m/s","E_k = ½×2×144"], ans:"E_k = 144 J"},
+  {n:33, tag:"Harakat miqdori", q:"m=0.5 kg, x=10t, harakat miqdori", given:"m=0.5 kg;  x=10t m", steps:["v = dx/dt = 10 m/s","p = m·v = 0.5×10"], ans:"p = 5 kg·m/s"},
+  {n:34, tag:"G'ildirak kinetik energiyasi", q:"m=40 kg, R=1 m g'ildirak (dumalaydi), v_c=5 m/s", given:"m=40 kg;  R=1m;  v_c=5 m/s", steps:["J = ½mR² = ½×40×1 = 20 kg·m²","ω = v_c/R = 5 rad/s","E = ½mv² + ½Jω²","E = ½×40×25 + ½×20×25 = 500+250"], ans:"E_k = 750 J"},
+  {n:35, tag:"Disk kinetik energiyasi", q:"m=2 kg, R=0.5 m disk (dumalaydi), v_c=2 m/s", given:"m=2 kg;  R=0.5m;  v_c=2 m/s", steps:["J = ½mR² = ½×2×0.25 = 0.25 kg·m²","ω = v_c/R = 4 rad/s","E = ½×2×4 + ½×0.25×16 = 4+2"], ans:"E_k = 6 J"},
+];
+
+const tags = [...new Set(data.map(d=>d.tag))];
+
+function buildFilters(){
+  const row=document.getElementById('filterRow');
+  const all=document.createElement('button');
+  all.className='pill active';all.textContent='Barchasi';all.dataset.tag='';
+  all.onclick=()=>{setActive(all);applyFilters()};
+  row.appendChild(all);
+  tags.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='pill';b.textContent=t;b.dataset.tag=t;
+    b.onclick=()=>{setActive(b);applyFilters()};
+    row.appendChild(b);
+  });
+}
+function setActive(el){document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));el.classList.add('active')}
+function getActiveTag(){const a=document.querySelector('.pill.active');return a?a.dataset.tag:''}
+function applyFilters(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const tag=getActiveTag();
+  const f=data.filter(d=>{
+    const mt=!tag||d.tag===tag;
+    const mq=!q||String(d.n).includes(q)||d.q.toLowerCase().includes(q)||d.tag.toLowerCase().includes(q)||d.ans.toLowerCase().includes(q);
+    return mt&&mq;
+  });
+  renderCards(f);
+}
+function renderCards(list){
+  const g=document.getElementById('grid');
+  document.getElementById('countBar').textContent=list.length+' ta masala ko\'rsatilmoqda';
+  g.innerHTML='';
+  if(!list.length){g.innerHTML='<div class="nores">Hech narsa topilmadi.</div>';return}
+  list.forEach(d=>{
+    const c=document.createElement('div');c.className='card';
+    c.innerHTML=`
+      <div class="card-top">
+        <div class="card-meta">
+          <div class="nbadge">${d.n}</div>
+          <span class="tbadge">${d.tag}</span>
+        </div>
+        <div class="card-q">${d.q}</div>
+      </div>
+      <div class="given-block"><div class="gl">Berilgan</div>${d.given}</div>
+      <div class="ans-block"><span class="al">Javob</span><span class="av">${d.ans}</span></div>
+      <button class="stoggle" onclick="toggleSteps(this)">
+        <svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+        Yechim bosqichlari
+      </button>
+      <div class="sbody">
+        ${d.steps.map((s,i)=>`<div class="step"><span class="sn">${i+1}.</span><span class="st">${s}</span></div>`).join('')}
+      </div>`;
+    g.appendChild(c);
+  });
+}
+function toggleSteps(btn){
+  const body=btn.nextElementSibling;
+  const arrow=btn.querySelector('.arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+buildFilters();
+applyFilters();
+</script>
+</body>
+</html>
